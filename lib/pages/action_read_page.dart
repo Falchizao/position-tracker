@@ -5,7 +5,7 @@ import 'package:suficiencia_flutter_marcelo_falchi/pages/action_edit_page_view.d
 import 'package:suficiencia_flutter_marcelo_falchi/pages/maps_page._view.dart';
 import 'package:suficiencia_flutter_marcelo_falchi/pages/read_location_view.dart';
 import 'package:suficiencia_flutter_marcelo_falchi/widget/toast.dart';
-
+import '../provider/maps_app_location.dart';
 import '../service/calculate.dart';
 
 class LocationPage extends StatefulWidget {
@@ -29,22 +29,13 @@ class _LocationPageState extends State<LocationPage> {
     }
   }
 
-  void _navigateToOtherPage(BuildContext context, String action) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => OtherPage(action: action),
-      ),
-    );
-  }
-
   Future<void> _calculateDistance() async {
     num? distance = 0;
-
+    handleToast('Loading....');
     try {
-      distance = await calculateDistance(widget.location.cep);
+      distance = await calculateDistanceCEP(widget.location.cep);
       handleToast(
-          'Distancia entre vc e o ponto turistico ${distance.toString()}');
+          'Distancia em linha reta é de aproximadamente ${distance.toString()} KM!');
     } catch (e) {
       handleToast("erro ao calcular distancia");
     }
@@ -60,75 +51,92 @@ class _LocationPageState extends State<LocationPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        ActionEditPage(location: widget.location),
-                  ),
-                );
-              },
-              child: Text('Edit Location'),
+            SizedBox(
+              width: 400,
+              height: 100,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          ActionEditPage(location: widget.location),
+                    ),
+                  );
+                },
+                child: const Text('Edit Location'),
+              ),
             ),
-            ElevatedButton(
-              onPressed: () {
-                removeLocation();
-                Navigator.pop(context);
-              },
-              child: Text('Remove Location'),
+            const SizedBox(height: 16.0),
+            SizedBox(
+              width: 400,
+              height: 100,
+              child: ElevatedButton(
+                onPressed: () {
+                  removeLocation();
+                  Navigator.pop(context);
+                },
+                child: const Text('Remove Location'),
+              ),
             ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        ViewLocation(location: widget.location),
-                  ),
-                );
-              },
-              child: Text('View Location Info'),
+            const SizedBox(height: 16.0),
+            SizedBox(
+              width: 400,
+              height: 100,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          ViewLocation(location: widget.location),
+                    ),
+                  );
+                },
+                child: const Text('View Location Info'),
+              ),
             ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        MapView(locationCEP: widget.location.cep),
-                  ),
-                );
-              },
-              child: Text('View in Maps'),
+            const SizedBox(height: 16.0),
+            SizedBox(
+              width: 400,
+              height: 100,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          MapView(locationCEP: widget.location.cep),
+                    ),
+                  );
+                },
+                child: const Text('View in Maps this APP'),
+              ),
             ),
-            ElevatedButton(
-              onPressed: () {
-                _calculateDistance();
-              },
-              child: Text('Calculate Distance in KM'),
+            const SizedBox(height: 16.0),
+            SizedBox(
+              width: 400,
+              height: 100,
+              child: ElevatedButton(
+                onPressed: () {
+                  getAddress(widget.location.cep);
+                },
+                child: const Text('View in Google Maps APP'),
+              ),
             ),
+            const SizedBox(height: 16.0),
+            SizedBox(
+              width: 400,
+              height: 100,
+              child: ElevatedButton(
+                onPressed: () {
+                  _calculateDistance();
+                },
+                child: const Text('Calculate Distance in KM'),
+              ),
+            )
           ],
         ),
-      ),
-    );
-  }
-}
-
-class OtherPage extends StatelessWidget {
-  final String action;
-
-  OtherPage({Key? key, required this.action}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Other Page'),
-      ),
-      body: Center(
-        child: Text('You selected to $action'),
       ),
     );
   }

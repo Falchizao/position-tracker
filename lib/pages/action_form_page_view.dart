@@ -29,7 +29,7 @@ class _ActionLocationState extends State<ActionLocation> {
   final TextEditingController _cepController = TextEditingController();
   final TextEditingController _imageurlController = TextEditingController();
 
-  Future _addLocation() async {
+  Future<bool> _addLocation() async {
     String name = _nameController.text;
     String details = _detailsController.text;
     String differentials = _differentialsController.text;
@@ -53,12 +53,17 @@ class _ActionLocationState extends State<ActionLocation> {
 
     try {
       await onSubmit(location);
-      handleToast("Location added with success!");
-      Navigator.pop(context);
+      return true;
     } catch (e) {
       handleToast("Erro while trying to add new location, try again");
       print(e);
+
+      return false;
     }
+  }
+
+  void out() {
+    Navigator.pop(context);
   }
 
   @override
@@ -72,7 +77,7 @@ class _ActionLocationState extends State<ActionLocation> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: const [
             Text(
-              'New Location',
+              'ADD',
               style: TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.bold,
@@ -102,13 +107,13 @@ class _ActionLocationState extends State<ActionLocation> {
                     labelText: 'Location name',
                   ),
                   validator: (name) {
-                    if (name != null || name!.isEmpty) {
+                    if (name == null || name == "") {
                       return 'Insert a name ';
                     }
                     return null;
                   },
                   onSaved: (name) {
-                    if (name != null || name!.isEmpty) {
+                    if (name != null && name != "") {
                       _nameController.text = name;
                     }
                   },
@@ -125,13 +130,13 @@ class _ActionLocationState extends State<ActionLocation> {
                     labelText: 'Location details',
                   ),
                   validator: (details) {
-                    if (details != null || details!.isEmpty) {
+                    if (details == null || details == "") {
                       return 'Insert the details';
                     }
                     return null;
                   },
                   onSaved: (details) {
-                    if (details != null || details!.isEmpty) {
+                    if (details != null && details != "") {
                       _detailsController.text = details;
                     }
                   },
@@ -148,13 +153,13 @@ class _ActionLocationState extends State<ActionLocation> {
                     labelText: 'Location differentials',
                   ),
                   validator: (diff) {
-                    if (diff != null || diff!.isEmpty) {
+                    if (diff == null || diff == "") {
                       return 'Insert the differentials';
                     }
                     return null;
                   },
                   onSaved: (diff) {
-                    if (diff != null || diff!.isEmpty) {
+                    if (diff != null && diff != "") {
                       _differentialsController.text = diff;
                     }
                   },
@@ -170,13 +175,13 @@ class _ActionLocationState extends State<ActionLocation> {
                     labelText: 'Location CEP',
                   ),
                   validator: (cep) {
-                    if (cep != null || cep!.isEmpty) {
+                    if (cep == null || cep == "") {
                       return 'Insert the CEP';
                     }
                     return null;
                   },
                   onSaved: (cep) {
-                    if (cep != null || cep!.isEmpty) {
+                    if (cep != null && cep != "") {
                       _cepController.text = cep;
                     }
                   },
@@ -190,25 +195,30 @@ class _ActionLocationState extends State<ActionLocation> {
                   },
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'Location image',
+                    labelText: 'Image URL',
                   ),
                   validator: (image) {
-                    if (image != null || image!.isEmpty) {
+                    if (image == null || image == "") {
                       return 'Insert the image';
                     }
                     return null;
                   },
                   onSaved: (image) {
-                    if (image != null || image!.isEmpty) {
+                    if (image != null && image != "") {
                       _imageurlController.text = image;
                     }
                   },
                 ),
                 const SizedBox(height: 20.0),
                 ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState != null) {
-                      _addLocation();
+                  onPressed: () async {
+                    final form = _formKey.currentState;
+                    if (form != null && !form.validate()) {
+                      return;
+                    }
+                    bool success = await _addLocation();
+                    if (success) {
+                      out();
                     }
                   },
                   child: const Text('Register new Location!'),

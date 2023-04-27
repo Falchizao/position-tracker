@@ -22,7 +22,11 @@ class _LocationsViewState extends State<LocationsView> {
   @override
   void initState() {
     super.initState();
-    _searches = _searchDao.getSearches();
+    getconfig();
+  }
+
+  void getconfig() async {
+    searcheds = await _searchDao.getSearches();
     setState(() {});
   }
 

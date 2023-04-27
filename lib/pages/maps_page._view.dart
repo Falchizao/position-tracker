@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:maps_launcher/maps_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geocoding/geocoding.dart';
@@ -11,6 +10,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:math' show cos, sqrt, asin;
 
 import 'package:suficiencia_flutter_marcelo_falchi/widget/toast.dart';
+
+import '../service/maps_service.dart';
 
 class MapView extends StatefulWidget {
   final String locationCEP;
@@ -39,39 +40,41 @@ class _MapViewState extends State<MapView> {
     dynamic response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
-      dynamic result = json.decode(response.body);
+      try {
+        dynamic content = json.decode(response.body);
+        String logradouro = content["logradouro"];
+        String bairro = content["bairro"];
+        String localidade = content["localidade"];
+        String uf = content["uf"];
 
-      String localidade = result["localidade"];
-      String logradouro = result["logradouro"];
-      String bairro = result["bairro"];
-      String uf = result["uf"];
+        String concat = '${logradouro} ${bairro} ${localidade} ${uf}';
 
-      String concated = '$localidade $logradouro $bairro $uf';
+        List<Location> finallocation = await locationFromAddress(concat);
+        final LatLng attmap =
+            LatLng(finallocation[0].latitude, finallocation[0].longitude);
 
-      MapsLauncher.launchQuery(concated);
+        Marker marker = Marker(
+          markerId: MarkerId('Destino'),
+          position: attmap,
+          infoWindow: InfoWindow(
+            title: 'Destino ${widget.locationCEP}',
+          ),
+          icon: BitmapDescriptor.defaultMarkerWithHue(1),
+        );
 
-      List<Location>? destinationPlacemark =
-          await locationFromAddress(concated);
+        markers.add(marker);
 
-      // await Geolocator.getCurrentPosition(
-      //         desiredAccuracy: LocationAccuracy.high)
-      //     .then((Position position) async {
-      //   setState(() {
-      //     mapController.animateCamera(
-      //       CameraUpdate.newCameraPosition(
-      //         CameraPosition(
-      //           target: LatLng(position.latitude, position.longitude),
-      //           zoom: 18.0,
-      //         ),
-      //       ),
-      //     );
-      //   });
-      //   await _getAddress();
-      //   }).catchError((e) {
-      //     print(e);
-      //   });
-      // } else {
-      //   print("erro");
+        mapController.animateCamera(
+          CameraUpdate.newCameraPosition(
+            CameraPosition(
+              target: attmap,
+              zoom: 18.0,
+            ),
+          ),
+        );
+      } catch (e) {
+        print(e);
+      }
     }
   }
 

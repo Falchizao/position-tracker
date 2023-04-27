@@ -6,8 +6,7 @@ import 'package:suficiencia_flutter_marcelo_falchi/widget/toast.dart';
 import '../dao/locations_dao.dart';
 
 Future<void> onSubmit(Location location) async {
-  String cep = location.cep;
-  String url = 'https://viacep.com.br/ws/$cep/json/';
+  String url = 'https://viacep.com.br/ws/${location.cep}/json/';
 
   dynamic response = await http.get(Uri.parse(url));
 
@@ -17,11 +16,12 @@ Future<void> onSubmit(Location location) async {
     try {
       final LocationDao _locationDao = LocationDao();
       _locationDao.insertLocation(location);
+      handleToast("Location added with success!");
     } catch (e) {
       handleToast(e.toString());
     }
   } else {
-    handleToast("error inserting");
+    handleToast("INVALID CEP!");
   }
 }
 

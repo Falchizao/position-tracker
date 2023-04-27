@@ -7,6 +7,23 @@ class LocationCard extends StatelessWidget {
 
   LocationCard({required this.location});
 
+  Widget getIcon() {
+    return FadeInImage(
+      image: NetworkImage(location.image),
+      placeholder: const AssetImage("images/loading.jpg"),
+      imageErrorBuilder: (context, error, stackTrace) {
+        return Image.network(
+          'https://api.dicebear.com/6.x/initials/jpg?seed=${location.name}',
+          width: 400.0,
+          height: 400.0,
+        );
+        ;
+      },
+      fit: BoxFit.fitWidth,
+    );
+    ;
+  }
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -36,11 +53,7 @@ class LocationCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           child: Stack(
             children: [
-              Image.network(
-                'https://api.dicebear.com/6.x/initials/jpg?seed=${location.name}',
-                width: 400.0,
-                height: 400.0,
-              ),
+              getIcon(),
               Positioned(
                 bottom: 20,
                 left: 20,

@@ -41,6 +41,7 @@ dev_dependencies:
     sdk: flutter
 
   fluttertoast: ^8.0.8
+  location: ^4.3.0
   maps_launcher: ^2.2.0
   intl: ^0.18.0
   dio: ^4.0.0
@@ -72,6 +73,8 @@ flutter:
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
+  assets:
+    - images/loading.jpg
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:

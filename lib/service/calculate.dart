@@ -1,20 +1,44 @@
-import 'dart:convert';
-import 'dart:ffi';
-
+import 'dart:math';
 import 'package:geolocator/geolocator.dart';
 import "package:http/http.dart" as http;
-import 'package:suficiencia_flutter_marcelo_falchi/widget/toast.dart';
+import 'dart:convert';
+import 'package:geocoding/geocoding.dart';
+import 'maps_service.dart';
 
-Future<num?> calculateDistance(String cep) async {
-  String url = 'https://brasilapi.com.br/api/cep/v2/$cep';
+Future<num?> calculateDistanceCEP(String cep) async {
+  String url = 'https://viacep.com.br/ws/${cep}/json/';
 
   dynamic response = await http.get(Uri.parse(url));
+  num distance = 0;
+  if (response.statusCode == 200) {
+    try {
+      dynamic content = json.decode(response.body);
+      String logradouro = content["logradouro"];
+      String bairro = content["bairro"];
+      String localidade = content["localidade"];
+      String uf = content["uf"];
 
-  try {
-    dynamic distanceInMeters = json.decode(response.body);
-    distanceInMeters = await Geolocator.distanceBetween(
-        52.2165157, 6.9437819, 52.3546274, 4.8285838);
-  } catch (e) {
-    handleToast(e.toString());
+      String concat = '${logradouro} ${bairro} ${localidade} ${uf}';
+
+      Position myLoc = await getCurrentLocation();
+      List<Location> finallocation = await locationFromAddress(concat);
+
+      distance = calculateDistance(myLoc.latitude, myLoc.longitude,
+          finallocation[0].latitude, finallocation[0].longitude);
+      String a = '';
+    } catch (e) {
+      print(e);
+    }
+
+    return distance;
   }
+}
+
+// Calcula em KM
+double calculateDistance(lat1, lon1, lat2, lon2) {
+  var p = 0.017453292519943295;
+  var a = 0.5 -
+      cos((lat2 - lat1) * p) / 2 +
+      cos(lat1 * p) * cos(lat2 * p) * (1 - cos((lon2 - lon1) * p)) / 2;
+  return 12742 * asin(sqrt(a));
 }

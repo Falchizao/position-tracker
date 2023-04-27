@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:suficiencia_flutter_marcelo_falchi/dao/locations_dao.dart';
 import '../model/location.dart';
@@ -82,7 +81,7 @@ class _ActionEditPageState extends State<ActionEditPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: const [
             Text(
-              'New Location',
+              'EDIT',
               style: TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.bold,
@@ -112,13 +111,13 @@ class _ActionEditPageState extends State<ActionEditPage> {
                     labelText: 'Location name',
                   ),
                   validator: (name) {
-                    if (name != null || name!.isEmpty) {
+                    if (name == null || name == "") {
                       return 'Insert a name ';
                     }
                     return null;
                   },
                   onSaved: (name) {
-                    if (name != null || name!.isEmpty) {
+                    if (name != null && name != "") {
                       _nameController.text = name;
                     }
                   },
@@ -135,13 +134,13 @@ class _ActionEditPageState extends State<ActionEditPage> {
                     labelText: 'Location details',
                   ),
                   validator: (details) {
-                    if (details != null || details!.isEmpty) {
+                    if (details == null || details == "") {
                       return 'Insert the details';
                     }
                     return null;
                   },
                   onSaved: (details) {
-                    if (details != null || details!.isEmpty) {
+                    if (details != null && details != "") {
                       _detailsController.text = details;
                     }
                   },
@@ -158,13 +157,13 @@ class _ActionEditPageState extends State<ActionEditPage> {
                     labelText: 'Location differentials',
                   ),
                   validator: (diff) {
-                    if (diff != null || diff!.isEmpty) {
+                    if (diff == null || diff == "") {
                       return 'Insert the differentials';
                     }
                     return null;
                   },
                   onSaved: (diff) {
-                    if (diff != null || diff!.isEmpty) {
+                    if (diff != null && diff != "") {
                       _differentialsController.text = diff;
                     }
                   },
@@ -180,13 +179,13 @@ class _ActionEditPageState extends State<ActionEditPage> {
                     labelText: 'Location CEP',
                   ),
                   validator: (cep) {
-                    if (cep != null || cep!.isEmpty) {
+                    if (cep == null || cep == "") {
                       return 'Insert the CEP';
                     }
                     return null;
                   },
                   onSaved: (cep) {
-                    if (cep != null || cep!.isEmpty) {
+                    if (cep != null && cep != "") {
                       _cepController.text = cep;
                     }
                   },
@@ -200,26 +199,28 @@ class _ActionEditPageState extends State<ActionEditPage> {
                   },
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'Location image',
+                    labelText: 'Image URL',
                   ),
                   validator: (image) {
-                    if (image != null || image!.isEmpty) {
+                    if (image == null || image == "") {
                       return 'Insert the image';
                     }
                     return null;
                   },
                   onSaved: (image) {
-                    if (image != null || image!.isEmpty) {
+                    if (image != null && image != "") {
                       _imageurlController.text = image;
                     }
                   },
                 ),
                 const SizedBox(height: 20.0),
                 ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState != null) {
-                      _editLocation();
+                  onPressed: () async {
+                    final form = _formKey.currentState;
+                    if (form != null && !form.validate()) {
+                      return;
                     }
+                    await _editLocation();
                   },
                   child: const Text('Edit new Location!'),
                 ),
